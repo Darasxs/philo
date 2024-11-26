@@ -6,7 +6,7 @@
 /*   By: dpaluszk <dpaluszk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:48:39 by dpaluszk          #+#    #+#             */
-/*   Updated: 2024/11/22 16:22:41 by dpaluszk         ###   ########.fr       */
+/*   Updated: 2024/11/25 16:34:20 by dpaluszk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ typedef struct s_philo_details
 	int							meals;
 	bool						eating;
 	bool						full;
-	bool						death_flag;
 	unsigned long				starting_time;
 	unsigned long				last_meal;
 	pthread_mutex_t				*right_fork;
@@ -46,6 +45,7 @@ typedef struct s_philo_config
 	int							time_to_eat;
 	int							time_to_sleep;
 	int							eating_times;
+	bool						death_flag;
 	pthread_mutex_t				write_lock;
 	pthread_mutex_t				meal_lock;
 	pthread_mutex_t				dead_lock;
@@ -62,18 +62,21 @@ bool							is_digit(char *str);
 
 // helper functions
 unsigned long					get_time(void);
-unsigned long					usleep_helper(unsigned long m_seconds);
+unsigned long					usleep_helper(unsigned long m_seconds,
+									t_philo_config *config);
+void							print_msg(t_philo_config *config,
+									t_philo_details *philo, int id, char *str);
 
 // preparation
 t_philo_config					*init_struct(int argc, char **argv,
-									t_philo_config *config,
+									t_philo_config **config,
 									pthread_mutex_t *forks);
 bool							arguments_validation(int argc, char **argv);
-t_philo_config					*init_philo_details(t_philo_config *config,
+t_philo_config					*init_philo_details(t_philo_config **config,
 									pthread_mutex_t *forks);
 void							mutex_init(pthread_mutex_t **forks,
-									t_philo_config *config);
-void							init_other_mutexes(t_philo_config *config);
+									t_philo_config **config);
+void							init_other_mutexes(t_philo_config **config);
 
 // main logic
 int								create_threads(t_philo_config *config,
@@ -93,7 +96,7 @@ void							philo_eat(t_philo_details *philo);
 void							print_error(char *message);
 void							destroy_mutexes(t_philo_config *config,
 									pthread_mutex_t *forks);
-void							print_msg(t_philo_config *config,
-									t_philo_details *philo, int id, char *str);
+void							free_everything(t_philo_config *config,
+									pthread_mutex_t *forks);
 
 #endif

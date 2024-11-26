@@ -6,7 +6,7 @@
 /*   By: dpaluszk <dpaluszk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 18:41:24 by dpaluszk          #+#    #+#             */
-/*   Updated: 2024/11/17 17:01:00 by dpaluszk         ###   ########.fr       */
+/*   Updated: 2024/11/24 16:43:50 by dpaluszk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,3 +27,14 @@ void	destroy_mutexes(t_philo_config *config, pthread_mutex_t *forks)
 	pthread_mutex_destroy(&config->dead_lock);
 }
 
+void	free_everything(t_philo_config *config, pthread_mutex_t *forks)
+{
+	if (config)
+	{
+		if (config->philos)
+			free(config->philos);
+		free(config);
+	}
+	if (forks)
+		free(forks);
+}

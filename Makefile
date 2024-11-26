@@ -6,11 +6,11 @@
 #    By: dpaluszk <dpaluszk@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/07 13:48:26 by dpaluszk          #+#    #+#              #
-#    Updated: 2024/11/22 16:41:47 by dpaluszk         ###   ########.fr        #
+#    Updated: 2024/11/25 17:28:23 by dpaluszk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = philosophers
+NAME = philo
 
 SRC = main.c utils.c error_handling.c initialization.c handling_threads.c philo_actions.c \
 	cleanup.c helper_functions.c

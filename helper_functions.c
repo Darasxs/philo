@@ -6,18 +6,18 @@
 /*   By: dpaluszk <dpaluszk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 22:52:33 by dpaluszk          #+#    #+#             */
-/*   Updated: 2024/11/19 19:45:13 by dpaluszk         ###   ########.fr       */
+/*   Updated: 2024/11/25 16:35:24 by dpaluszk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-unsigned long	usleep_helper(unsigned long m_seconds)
+unsigned long	usleep_helper(unsigned long m_seconds, t_philo_config *config)
 {
 	unsigned long	start_time;
 
 	start_time = get_time();
-	while ((get_time() - start_time) < m_seconds)
+	while ((get_time() - start_time) < m_seconds && config->death_flag == false)
 		usleep(500);
 	return (0);
 }
@@ -39,7 +39,7 @@ void	print_msg(t_philo_config *config, t_philo_details *philo, int id,
 {
 	unsigned long	time;
 
-	if (philo->death_flag)
+	if (philo->config->death_flag)
 		return ;
 	pthread_mutex_lock(&config->write_lock);
 	time = get_time() - philo->starting_time;

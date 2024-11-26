@@ -6,7 +6,7 @@
 /*   By: dpaluszk <dpaluszk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 17:08:32 by dpaluszk          #+#    #+#             */
-/*   Updated: 2024/11/22 18:08:31 by dpaluszk         ###   ########.fr       */
+/*   Updated: 2024/11/25 17:48:44 by dpaluszk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,16 @@
 void	philo_eat(t_philo_details *philo)
 {
 	pthread_mutex_lock(philo->right_fork);
-	print_msg(philo->config, philo, philo->id, "has taken a right fork");
+	print_msg(philo->config, philo, philo->id, "has taken a fork");
 	pthread_mutex_lock(philo->left_fork);
-	print_msg(philo->config, philo, philo->id, "has taken a left fork");
+	print_msg(philo->config, philo, philo->id, "has taken a fork");
 	philo->eating = true;
 	print_msg(philo->config, philo, philo->id, "is eating");
 	pthread_mutex_lock(&philo->config->meal_lock);
 	philo->meals++;
 	philo->last_meal = get_time();
 	pthread_mutex_unlock(&philo->config->meal_lock);
-	usleep_helper(philo->config->time_to_eat);
+	usleep_helper(philo->config->time_to_eat, philo->config);
 	philo->eating = false;
 	pthread_mutex_unlock(philo->right_fork);
 	pthread_mutex_unlock(philo->left_fork);
@@ -38,7 +38,7 @@ void	philo_think(t_philo_details *philo)
 void	philo_sleep(t_philo_details *philo)
 {
 	print_msg(philo->config, philo, philo->id, "is sleeping");
-	usleep_helper(philo->config->time_to_sleep);
+	usleep_helper(philo->config->time_to_sleep, philo->config);
 }
 
 void	*philo_cycle(void *data)
@@ -50,13 +50,20 @@ void	*philo_cycle(void *data)
 	{
 		print_msg(philo_details->config, philo_details, philo_details->id,
 			"has taken a fork");
-		return(NULL);
+		return (data);
 	}
 	if (philo_details->id % 2 == 0)
-		usleep(500);
+		usleep(1000);
 	while (1)
 	{
 		philo_eat(philo_details);
+		pthread_mutex_lock(&philo_details->config->dead_lock);
+		if (philo_details->config->death_flag)
+		{
+			pthread_mutex_unlock(&philo_details->config->dead_lock);
+			break ;
+		}
+		pthread_mutex_unlock(&philo_details->config->dead_lock);
 		pthread_mutex_lock(&philo_details->config->meal_lock);
 		if (philo_details->meals == philo_details->config->eating_times)
 		{

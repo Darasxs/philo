@@ -6,7 +6,7 @@
 /*   By: dpaluszk <dpaluszk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/15 12:05:01 by dpaluszk          #+#    #+#             */
-/*   Updated: 2024/11/22 16:05:29 by dpaluszk         ###   ########.fr       */
+/*   Updated: 2024/11/25 11:49:00 by dpaluszk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	main(int argc, char **argv)
 	{
 		if (!arguments_validation(argc, argv))
 			return (1);
-		config = init_struct(argc, argv, config, forks);
+		config = init_struct(argc, argv, &config, forks);
 		if (!config)
 		{
 			print_error("Failed to initialize the struct.\n");
@@ -37,5 +37,6 @@ int	main(int argc, char **argv)
 			return (3);
 		}
 	}
+	free_everything(config, forks);
 	return (0);
 }

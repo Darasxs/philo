@@ -6,7 +6,7 @@
 /*   By: dpaluszk <dpaluszk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 15:52:14 by dpaluszk          #+#    #+#             */
-/*   Updated: 2024/11/22 18:18:04 by dpaluszk         ###   ########.fr       */
+/*   Updated: 2024/11/25 17:37:19 by dpaluszk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,22 @@
 int	check_philo_death(t_philo_config *philo)
 {
 	unsigned long	current_time;
+	int				i;
 
 	current_time = get_time();
-	if (current_time
-		- philo->philos->last_meal > (unsigned long)philo->philos->config->time_to_die)
+	i = 0;
+	while (i < philo->number_of_philosophers)
 	{
-		pthread_mutex_lock(&philo->dead_lock);
-		philo->philos->death_flag = true;
-		pthread_mutex_unlock(&philo->dead_lock);
-		return (1);
+		pthread_mutex_lock(&philo->meal_lock);
+		if (current_time - philo->philos[i].last_meal
+			>= (unsigned long)philo->philos[i].config->time_to_die
+			&& philo->philos[i].eating == false)
+		{
+			pthread_mutex_unlock(&philo->meal_lock);
+			return (1);
+		}
+		pthread_mutex_unlock(&philo->meal_lock);
+		i++;
 	}
 	return (0);
 }
@@ -33,15 +40,20 @@ int	died(t_philo_config *philo)
 	int	i;
 
 	i = 0;
-	pthread_mutex_lock(&philo->dead_lock);
-	if (check_philo_death(philo))
+	while (i < philo->number_of_philosophers)
 	{
-		print_msg(philo->philos->config, philo->philos, philo->philos->id,
-			"died");
-		pthread_mutex_unlock(&philo->dead_lock);
-		return (1);
+		if (check_philo_death(philo))
+		{
+			pthread_mutex_lock(&philo->dead_lock);
+			philo->philos[i].dead = true;
+			print_msg(philo->philos->config, &philo->philos[i],
+				philo->philos[i].id, "died");
+			philo->death_flag = true;
+			pthread_mutex_unlock(&philo->dead_lock);
+			return (1);
+		}
+		i++;
 	}
-	pthread_mutex_unlock(&philo->dead_lock);
 	return (0);
 }
 
@@ -72,7 +84,6 @@ void	*monitoring_function(void *config)
 	config_data = (t_philo_config *)config;
 	while (1)
 	{
-		printf("siema\n");
 		if (finished_eating(config_data) || died(config_data))
 			break ;
 	}
